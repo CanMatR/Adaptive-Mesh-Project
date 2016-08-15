@@ -1,0 +1,9 @@
+10.0 6.454 0.364						: c_o, m, ke		: wt% alloy composition, liquidus slope, partition coefficient
+923.15									: Tm				: Pure Melting Temp
+4E-7 0.05 6.2E-7						: W, E4, Gamma		: interface width, anisotropy, Gibb-Thomson coefficient
+1.8E-9 155000 2.16666666666667E6		: Dl, Qe, Epsilon_0 :liquid diffusion coefficient, activation barrier for solid diffusion, Ratio of solid-liquid diffusion
+1.8251E-10								: Fu				: Noise amplitude for fluxes
+0.0 0.2 20 0.0							: T_init, binary_omega, Q_t, lbTemp :  initial temperature(if 0 set to Tl), initial undercooling, cooling rate, lower bound temperature
+0.8 0.00									: dx0, dt : mesh spacing, time step(calculated if 0)
+1000 50 20								: printFreq, AdaptFreq, endt_mult :print frequency, adapt frequency, num of prints to end of simulation endt = endt_mult*printfreq
+1.178 1.178   									: Alpha, Beta

@@ -1,0 +1,29 @@
+3				:	(Control)	Number of Communications
+3				:	(Control)	Number of Dimensions
+8				:	(Control)	Number of Processors
+2 2 2				:	(Control)	Number of domains in x, y, z
+6 3 1				:	(Domain)	maxRes, uniRes, buffer size
+1 1 0				:	()			Periodic Boundaries
+3 0				:	(Field)		Number of simulation fields, auxilliary fields
+#Field communications
+0 1				:	(Control)	Field, Communication
+1 2				:	(Control)	Field, Communication
+2 2				:	(Control)	Field, Communication
+#Initial Geometry for mesh adaption
+1				:	Number of adaption criteria
+1				:	Type(1=circle/sphere)
+6 256 256 256	:   Radius, Seed Center
+1				:	Type(1=circle/sphere)
+4 244 34 128	:   Radius, Seed Center
+1				:	Type(1=circle/sphere)
+4 314 84 128	:   Radius, Seed Center
+1				:	Type(1=circle/sphere)
+4 415 54 128	:   Radius, Seed Center
+1				:	Type(1=circle/sphere)
+4 586 114 128	:   Radius, Seed Center
+1				:	Type(1=circle/sphere)
+4 714 24 128	:   Radius, Seed Center
+1				:	Type(1=circle/sphere)
+4 812 144 128	:   Radius, Seed Center
+1				:	Type(1=circle/sphere)
+4 945 112 128	:   Radius, Seed Center
