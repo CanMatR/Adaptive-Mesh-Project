@@ -386,14 +386,14 @@ public:
 		int dx_rat;
 		dx_rat = this->dx / fld->dx;
 		xs = (fld->origin.Vx - this->origin.Vx) / this->dx;
-		xe = ceil((float)(fld->origin.Vx + fld->grid_size.Vx*fld->dx - this->origin.Vx) / this->dx);
+		xe = ceil(((float)(fld->origin.Vx+fld->grid_size.Vx*fld->dx-this->origin.Vx)) / (float) this->dx);
 		ys = (fld->origin.Vy - this->origin.Vy) / this->dx;
-		ye = ceil((fld->origin.Vy + fld->grid_size.Vy*fld->dx - this->origin.Vy) / this->dx);
+		ye = ceil(((float)(fld->origin.Vy + fld->grid_size.Vy*fld->dx - this->origin.Vy)) / (float)this->dx);
 		if (this->dim == 3)
 		{
 			int z,zs, ze;
 			zs = (fld->origin.Vz - this->origin.Vz) / this->dx;
-			ze = ceil((float)(fld->origin.Vz + fld->grid_size.Vz*fld->dx - this->origin.Vz) / this->dx);
+			ze = ceil(((fld->origin.Vz + fld->grid_size.Vz*fld->dx - this->origin.Vz)) / (float)this->dx);
 			for (i = 0; i < fld->nf; i++)
 			{
 				for (z = zs; z < ze; z++)for (y = ys; y < ye; y++)for (x = xs; x < xe; x++)
@@ -411,7 +411,6 @@ public:
 				for (y = ys; y < ye; y++)for (x = xs; x < xe; x++)
 				{
 					ind = index(x + this->B, y + this->B, this->grid_size.Vx+ 2 * this->B);
-					
 					data[i][ind] = fld->Retrieve_Value(this->origin.Vx + x*this->dx, this->origin.Vy + y*this->dx, i);
 				}
 			}
@@ -479,11 +478,13 @@ public:
 		endz = this->grid_size.Vz + this->B - 1;
 		double n2 = (start - endx)*(start - endy);
 		double n3 = (endx - start)*(endy-start)*(endz-start);
-		double prefactor[nf];
+		double prefactor[5];
 		prefactor[0] = 1.0;
-		prefactor[1] = 1.0;
-		//prefactor[2] = 0.0;
-		
+		prefactor[1] = 0.0;
+		prefactor[2] = 0.0;
+		prefactor[3] = 0.0;
+		prefactor[4] = 0.0;
+
 		if (this->dim == 3)
 		{
 			counter = 0.0;
@@ -494,16 +495,12 @@ public:
 				yp = index(xi, yi+1, zi, grid_size.Vx + 2 * this->B, grid_size.Vx + 2 * this->B);
 				zp = index(xi, yi, zi+1, grid_size.Vx + 2 * this->B, grid_size.Vx + 2 * this->B);
 
-				// loop through all fields
-				//				for (V = 0; V < 1; V++)
 				for (V = 0; V < this->nf; V++)
 				{
 					counter += prefactor[V] * (fabs(data[V][xp] - data[V][ind])
 						+ fabs(data[V][yp] - data[V][ind])
 						+ fabs(data[V][zp] - data[V][ind])
 						) / (this->dx*n3);
-//					printf("dx %d\n", this->dx);
-			//		printf("counter %f fx %f fy %f fz %f n3 %f dx %d\n", counter, fabs(data[V][xp] - data[V][ind]), fabs(data[V][yp] - data[V][ind]), fabs(data[V][zp] - data[V][ind]), n3, this->dx);
 
 				}
 			}
@@ -527,16 +524,12 @@ public:
 				//				for (V = 0; V < 1; V++)
 				for (V = 0; V < this->nf; V++)
 				{
-					 counter += prefactor[V] * (fabs(data[V][xp] - data[V][ind])
-                                                + fabs(data[V][yp] - data[V][ind])
-                                                ) / (this->dx*n2);
-			/*		counter += prefactor[V] * fabs(data[0][ind] - 1)*(fabs(data[V][xp] - data[V][ind])
-						+ fabs(data[V][yp] - data[V][ind])
-						) / (this->dx*n2);*/
+				  counter += prefactor[V] * (fabs(data[V][xp]-data[V][ind])+fabs(data[V][yp]-data[V][ind]))/(this->dx*n2);
+				  //					counter += prefactor[V] * fabs(data[0][ind] - 1)*(fabs(data[V][xp] - data[V][ind])
+				  //	+ fabs(data[V][yp] - data[V][ind])
+				  //	) / (this->dx*n2);
 				}
 			}
-//			if(this->origin.Vx == 48)
-//			printf("%d %d %f\n",this->origin.Vx,this->origin.Vy,counter);
 			if (counter > 1E-4)
 				this->split_flag = 1;
 		}
@@ -625,6 +618,21 @@ public:
 		int ind[8];
 		int Nx = this->grid_size.Vx + 2 * this->B;
 		int Ny = this->grid_size.Vy + 2 * this->B;
+
+		if(V==3)//special case for id field, remove for general modelling
+		  {
+		    int xx,yy,zz,nn;
+		    for(zz=0;zz<2;zz++)for(yy=0;yy<2;yy++)for(xx=0;xx<2;xx++)
+		    {
+		      nn = index(xi+xx,yi+yy,zi+zz,Nx,Ny);
+		      if(data[3][nn] != 0)
+			 return data[V][nn];
+		      else
+			return 0.0;
+		      //                        ind[0] = index(xi, yi, zi, Nx, Ny);
+		      //                        return data[V][ind[0]];
+		    }
+		  }
 
 		if (rx%dx == 0 && ry%dx == 0 && rz%dx ==0)
 		{
@@ -1489,7 +1497,7 @@ public:
 		else if (dim == 2)
 		{
 			fprintf(fp, "Origin: %d %d\n", this->origin.Vx, this->origin.Vy);
-			for (f = 0; f < this->nf; f++)
+			for (f = 0; f < 1;f++)// this->nf; f++)
 			{
 				fprintf(fp, "field = %d\n", f);
 				for (y = this->grid_size.Vy + 2 * this->B - 1; y >= 0; y--)
