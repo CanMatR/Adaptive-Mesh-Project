@@ -153,12 +153,13 @@ public:
 	void Adaption_Cycle(int t)
 	{
 		int i;
-		Reg->Unadapt_Domains();
+/*		Reg->Unadapt_Domains();
 		this->Build_Communication_Requests();
 		for (i = 1; i < MESH_PARAMS.comm_calls; i++)
 		{
 			this->Communicate(i);
 		}
+		*/
 		Reg->Adapt_Domains();
 		this->Build_Adaption_Communication_Requests();
 		Adaption_Parallel();
@@ -200,6 +201,7 @@ public:
 			}
 		}
 	}
+	
 	void Create_Initialization()
 	{
 		int x, y, z,ind;
@@ -332,82 +334,45 @@ public:
 		//Initialize field values for fields
 		fclose(fp);
 	}
-
 	adapt_geometry **Init_Load_Seed_Geom(FILE *fp,int num_geom)
 	{
-
-                int i,type;
-                char inputline[BUFSIZ];
-                adapt_geometry **ad_geo;
-                circle *circ;
-                sphere *sphr;
-                plane  *rectang;
-                cubid  *Cbd;
-                ad_geo = new adapt_geometry*[num_geom];
-                cart_vector_d origin;
-                cart_vector_d width;
-                double R;
-
+		int i,type;
+		char inputline[BUFSIZ];
+		adapt_geometry **ad_geo;
+		circle *circ;
+		sphere *sphr;
+		ad_geo = new adapt_geometry*[num_geom];
+		cart_vector_d origin;
+		double R;
 		for (i = 0; i < num_geom; i++)
-                {
-
+		{
 			fgets(inputline, BUFSIZ, fp);
 			sscanf(inputline, "%d", &(type));
 			switch (type)
-
-                        {
-                        case 1://circle(2D) /sphere(3D)
-                                if (this->dim == 3)
-                                {
-                                        sphr = new sphere();
-                                        fgets(inputline, BUFSIZ, fp);
-                                        sscanf(inputline, "%lf %lf %lf %lf", &(R), &(origin.Vx), &(origin.Vy), &(origin.Vz));
-                                        sphr->set_geom(origin, R);
-                                        ad_geo[i] = sphr;
-                                }
-                                else if (this->dim == 2)
-                                {
-                                        circ = new circle();
-                                        origin.Vz = 0.0;
-                                        fgets(inputline, BUFSIZ, fp);
-                                        sscanf(inputline, "%lf %lf %lf", &(R), &(origin.Vx), &(origin.Vy));
-                                        circ->set_geom(origin, R);
-                                        ad_geo[i] = circ;
-                                }
-                                break;
-
-
-			case 2://rectangular(2D) /cubid(3D)
-                                if (this->dim == 3)
-                                {
-                                        Cbd = new cubid();
-                                        fgets(inputline, BUFSIZ, fp);
-                                        sscanf(inputline, "%lf %lf %lf %lf %lf %lf", &(width.Vx) ,&(width.Vy),&(width.Vz), &(origin.Vx), &(origin.Vy), &(origin.Vz));
-                                        Cbd->set_geom(origin, width);
-                                        ad_geo[i] = Cbd;
-                                        ad_geo[i]-> print_params(); printf("\n");
-
-                                }
-                                else if (this->dim == 2)
-                                {
-                                        rectang = new plane();
-                                        origin.Vz = 0.0;
-                                        width.Vz = 0.0;
-                                        fgets(inputline, BUFSIZ, fp);
-                                        sscanf(inputline, "%lf %lf %lf %lf ", &(width.Vx) ,&(width.Vy),&(origin.Vx), &(origin.Vy));
-                                        rectang->set_geom(origin, width);
-                                        ad_geo[i] = rectang;
-
-                                }
-
-                                break;
-                        }
-                }
-       return ad_geo;
-}
-
-
-
+			{
+			case 1://circle(2D) /sphere(3D)
+				if (this->dim == 3)
+				{
+					sphr = new sphere();
+					fgets(inputline, BUFSIZ, fp);
+					sscanf(inputline, "%lf %lf %lf %lf", &(R), &(origin.Vx), &(origin.Vy), &(origin.Vz));
+					sphr->set_geom(origin, R);
+					ad_geo[i] = sphr;
+				}
+				else if (this->dim == 2)
+				{
+					circ = new circle();
+					origin.Vz = 0.0;
+					fgets(inputline, BUFSIZ, fp);
+					sscanf(inputline, "%lf %lf %lf", &(R), &(origin.Vx), &(origin.Vy));
+					circ->set_geom(origin, R);
+					ad_geo[i] = circ;
+				}
+				break;
+			}
+		}
+		return ad_geo;
+	}
 	void Init_Domain_Dist()
 	{
 		int ind,x,y,z;
@@ -649,19 +614,11 @@ public:
 			receive_from = (i + myid) % ncpus;
 			send_tag = ncpus*(send_to)+i;
 			receive_tag = ncpus*(myid) + i;
-//			printf("%d myid %d send to : %d tag : %d  receive from : %d tag : %d\n",i,myid,send_to,send_tag,receive_from,receive_tag);
 			fflush(stdout);
 			if (RegionMap[receive_from].recv_val_size[comm] > 0)
 				MPI_Irecv(RegionMap[receive_from].recv_val[comm], RegionMap[receive_from].recv_val_size[comm], MPI_DOUBLE, receive_from, receive_tag, MPI_COMM_WORLD, &request);
 			if (RegionMap[send_to].send_val_size[comm] > 0)
 				MPI_Send(RegionMap[send_to].send_val[comm], RegionMap[send_to].send_val_size[comm], MPI_DOUBLE, send_to, send_tag, MPI_COMM_WORLD);
-//			MPI_Barrier(MPI_COMM_WORLD);
-
-//			if (RegionMap[receive_from].recv_val_size[comm] > 0)
-//				MPI_Irecv(RegionMap[receive_from].recv_val[comm], RegionMap[receive_from].recv_val_size[comm], MPI_DOUBLE, receive_from, myid, MPI_COMM_WORLD, &request);
-//			if (RegionMap[send_to].send_val_size[comm] > 0)
-//				MPI_Send(RegionMap[send_to].send_val[comm], RegionMap[send_to].send_val_size[comm], MPI_DOUBLE, send_to, send_to, MPI_COMM_WORLD);
-//			MPI_Barrier(MPI_COMM_WORLD);
 			if (RegionMap[receive_from].recv_val_size[comm] > 0)
 				MPI_Wait(&request, &status);
 		}
@@ -690,8 +647,7 @@ public:
 				}
 			}
 			//load values into the region in the same order they requested coordinates
-			for (y = 0; y<D[1]; y++)
-				for (x = 0; x<D[0]; x++)
+			for (y = 0; y<D[1]; y++)for (x = 0; x<D[0]; x++)
 					DomainMap[index(x, y, D[0])].recv_index = 0;
 
 			for (i = 0; i<Reg->recv_val_size[comm]; i++)
@@ -810,12 +766,11 @@ public:
 			}
 			
 			//Allocate the array sizes in domain control
-			for (y = 0; y<D[1]; y++)
-				for (x = 0; x<D[0]; x++)
-				{
-					ind = index(x, y, D[0]);
-					DomainMap[ind].allocate_memory(this->dim, comm);
-				}
+			for (y = 0; y<D[1]; y++)for (x = 0; x<D[0]; x++)
+			{
+				ind = index(x, y, D[0]);
+				DomainMap[ind].allocate_memory(this->dim, comm);
+			}
 			
 			//Load coordinates into DomainControl
 			for (i = 0; i<recv_coords_size; i += (this->dim + 1))//d is the dimension i.e. x,y and +1 for the id
@@ -937,7 +892,7 @@ public:
 				Dom_count = 0;
 				for (y = 0; y<D[1]; y++)for (x = 0; x<D[0]; x++)
 				{
-					ind = x + y*D[0];
+					ind = index(x, y, D[0]);
 					if (DomainMap[ind].region_id == RegionMap[r].region_id)
 					{
 						if (DomainMap[ind].recv_num[comm] > 0)
@@ -948,7 +903,16 @@ public:
 					}
 				}
 				RegionMap[r].recv_val_size[comm] = coord_count;
-				RegionMap[r].recv_val[comm] = new double[coord_count];//allocate memory to receive incoming values
+				if (RegionMap[r].recv_val[comm] != NULL)
+				{
+					delete RegionMap[r].recv_val[comm];
+				}
+				if (coord_count > 0)
+				{
+					RegionMap[r].recv_val[comm] = new double[coord_count];//allocate memory to receive incoming values
+				}
+				else
+					RegionMap[r].recv_val[comm] = NULL;
 				RegionMap[r].recv_buffer_size[comm] = coord_count*(this->dim + 1) + Dom_count * 2 + 2;//numcoordinates*(2(coords)+1(id)) + number of domains *2 + region id + number domains
 
 				if (RegionMap[r].recv_buffer[comm] != NULL)//need to initialize recv_buffer to NULl
@@ -962,7 +926,7 @@ public:
 					rcv_ind = 2;
 					for (y = 0; y<D[1]; y++)for (x = 0; x<D[0]; x++)
 					{
-						ind = x + y*D[0];
+						ind = index(x, y, D[0]);
 						if (DomainMap[ind].region_id == RegionMap[r].region_id)
 						{
 							if (DomainMap[ind].recv_num[comm] > 0)
@@ -988,6 +952,68 @@ public:
 				}
 			}
 		}
+		/*
+		if (this->dim == 2)
+		{
+		for (r = 0; r<ncpus; r++)//loop over regions
+		{
+		coord_count = 0;
+		Dom_count = 0;
+		for (y = 0; y<D[1]; y++)for (x = 0; x<D[0]; x++)
+		{
+
+		ind = x + y*D[0];
+		if (DomainMap[ind].region_id == RegionMap[r].region_id)
+		{
+		if (DomainMap[ind].recv_num[comm] > 0)
+		{
+		coord_count += DomainMap[ind].recv_num[comm];
+		Dom_count++;//temporarily use as a domain count to allocate memory for recv buffer
+		}
+		}
+		}
+		RegionMap[r].recv_val_size[comm] = coord_count;
+		RegionMap[r].recv_val[comm] = new double[coord_count];//allocate memory to receive incoming values
+		RegionMap[r].recv_buffer_size[comm] = coord_count*(this->dim + 1) + Dom_count * 2 + 2;//numcoordinates*(2(coords)+1(id)) + number of domains *2 + region id + number domains
+
+		if (RegionMap[r].recv_buffer[comm] != NULL)//need to initialize recv_buffer to NULl
+		free(RegionMap[r].recv_buffer[comm]);
+
+		if (RegionMap[r].recv_buffer_size[comm] >2)
+		{
+		RegionMap[r].recv_buffer[comm] = new int[RegionMap[r].recv_buffer_size[comm]];
+		RegionMap[r].recv_buffer[comm][0] = myid;
+		RegionMap[r].recv_buffer[comm][1] = Dom_count;
+		rcv_ind = 2;
+		for (y = 0; y<D[1]; y++)for (x = 0; x<D[0]; x++)
+		{
+		ind = x + y*D[0];
+		if (DomainMap[ind].region_id == RegionMap[r].region_id)
+		{
+		if (DomainMap[ind].recv_num[comm] > 0)
+		{
+		RegionMap[r].recv_buffer[comm][rcv_ind] = ind;
+		RegionMap[r].recv_buffer[comm][rcv_ind + 1] = DomainMap[ind].recv_num[comm];
+		rcv_ind += 2;
+		for (i = 0; i<DomainMap[ind].recv_num[comm]; i++)
+		{
+		RegionMap[r].recv_buffer[comm][rcv_ind] = DomainMap[ind].recv_coords[comm][3 * i];		//x
+		RegionMap[r].recv_buffer[comm][rcv_ind + 1] = DomainMap[ind].recv_coords[comm][3 * i + 1];	//y
+		RegionMap[r].recv_buffer[comm][rcv_ind + 2] = DomainMap[ind].recv_coords[comm][3 * i + 2];	//id
+		rcv_ind += 3;
+		}
+		}
+		}
+		}
+		}
+		else
+		{
+		RegionMap[r].recv_buffer_size[comm] = 0;
+		RegionMap[r].recv_buffer[comm] = NULL;
+		}
+		}
+		}
+		*/
 		else if (this->dim ==3)
 		{
 			for (r = 0; r<ncpus; r++)//loop over regions
@@ -1069,24 +1095,15 @@ public:
 
 		int receive_from, send_to;
 		for (i = 0; i<ncpus; i++)
-		{
-		
-//			if (comm != 2)
-			{
-				//MPI_Barrier(MPI_COMM_WORLD);
-				send_to = (myid - i + ncpus) % ncpus;
-				receive_from = (i + myid) % ncpus;
-				send_tag = ncpus*(send_to)+i;
-				receive_tag = ncpus*(myid)+i;
-				MPI_Irecv(&(RegionMap[receive_from].send_buffer_size[comm]), 1, MPI_INT, receive_from, receive_tag, MPI_COMM_WORLD, &R1);
-				MPI_Send(&(RegionMap[send_to].recv_buffer_size[comm]), 1, MPI_INT, send_to, send_tag, MPI_COMM_WORLD);
-				//MPI_Irecv(&(RegionMap[receive_from].send_buffer_size[comm]), 1, MPI_INT, receive_from, myid, MPI_COMM_WORLD, &R1);
-				//MPI_Send(&(RegionMap[send_to].recv_buffer_size[comm]), 1, MPI_INT, send_to, send_to, MPI_COMM_WORLD);
-				MPI_Wait(&R1, &S1);
-			}
+		{		
+			send_to = (myid - i + ncpus) % ncpus;
+			receive_from = (i + myid) % ncpus;
+			send_tag = ncpus*(send_to)+i;
+			receive_tag = ncpus*(myid)+i;
+			MPI_Irecv(&(RegionMap[receive_from].send_buffer_size[comm]), 1, MPI_INT, receive_from, receive_tag, MPI_COMM_WORLD, &R1);
+			MPI_Send(&(RegionMap[send_to].recv_buffer_size[comm]), 1, MPI_INT, send_to, send_tag, MPI_COMM_WORLD);
+			MPI_Wait(&R1, &S1);
 		}
-//		if (comm == 2)
-//			printf("comm %d myid %d %d %d\n", comm, myid, RegionMap[receive_from].send_buffer_size[comm], RegionMap[send_to].recv_buffer_size[comm]);
 		for (i = 0; i < ncpus; i++)
 		{
 			if (RegionMap[i].send_buffer[comm] != NULL)
@@ -1098,19 +1115,13 @@ public:
 			send_to = (myid - i + ncpus) % ncpus;
 			receive_from = (i + myid) % ncpus;
 			MPI_Barrier(MPI_COMM_WORLD);
-//			if (comm != 2)
-			{
-
-				if (RegionMap[receive_from].send_buffer_size[comm] > 0)
-					MPI_Irecv(RegionMap[receive_from].send_buffer[comm], RegionMap[receive_from].send_buffer_size[comm], MPI_INT, receive_from, myid, MPI_COMM_WORLD, &R2);
-				if (RegionMap[send_to].recv_buffer_size[comm] > 0)
-					MPI_Send(RegionMap[send_to].recv_buffer[comm], RegionMap[send_to].recv_buffer_size[comm], MPI_INT, send_to, send_to, MPI_COMM_WORLD);
-				MPI_Barrier(MPI_COMM_WORLD);
-				if (RegionMap[receive_from].send_buffer_size[comm] > 0)
-					MPI_Wait(&R2, &S2);
-			}
-//			else
-//				printf("comm %d myid %d send %d to %d receive %d from %d \n", comm, myid, RegionMap[send_to].recv_buffer_size[comm], send_to, RegionMap[receive_from].send_buffer_size[comm], receive_from);
+			if (RegionMap[receive_from].send_buffer_size[comm] > 0)
+				MPI_Irecv(RegionMap[receive_from].send_buffer[comm], RegionMap[receive_from].send_buffer_size[comm], MPI_INT, receive_from, myid, MPI_COMM_WORLD, &R2);
+			if (RegionMap[send_to].recv_buffer_size[comm] > 0)
+				MPI_Send(RegionMap[send_to].recv_buffer[comm], RegionMap[send_to].recv_buffer_size[comm], MPI_INT, send_to, send_to, MPI_COMM_WORLD);
+			MPI_Barrier(MPI_COMM_WORLD);
+			if (RegionMap[receive_from].send_buffer_size[comm] > 0)
+				MPI_Wait(&R2, &S2);
 		}
 	}
 	void Create_Send_Value(int comm)
@@ -1147,6 +1158,20 @@ public:
 		}
 	}
 	// ****** OUTPUT FUNCTIONS ********/
+	void Output_Load(int time)
+	{
+		FILE *fp;
+		for (int i = 0; i < MESH_PARAMS.num_procs; i++)
+		{
+			if (this->myid == i)
+			{
+				fp = fopen("load_data.out", "a");
+				Reg->Output_Load(time, fp,this->myid);
+				fclose(fp);
+			}
+			MPI_Barrier(MPI_COMM_WORLD);
+		}
+	}
 	void Output_VTK(int time,int lowres)
 	{
 		this->Reg->Output_VTK(time, lowres);
@@ -1161,12 +1186,14 @@ public:
 			sprintf(command, "mkdir restart_%d", time);
 		#elif __linux
 			sprintf(command, "mkdir ./restart_%d", time);
-		#else
+		#elif __unix
 			sprintf(command, "mkdir ./restart_%d", time);
 		#endif
 		system(command);
+		/*
 		if (this->myid == 0)
 		{
+		  
 			sprintf(filename, "./restart_%d/control.restart", time);
 			fp = fopen(filename, "w");
 			fprintf(fp, "%d	: Number of Communications\n",this->num_comms);
@@ -1184,15 +1211,17 @@ public:
 			}
 			fclose(fp);
 		}
+		  */
 		#ifdef _WIN32
 			sprintf(command, "mkdir restart_%d\\region_%d", time,this->myid);
 		#elif __linux
 			sprintf(command, "mkdir ./restart_%d/region_%d", time,this->myid);
-		#else
+		#elif __unix
 			sprintf(command, "mkdir ./restart_%d/region_%d", time,this->myid);
 		#endif
+		  
 		system(command);
-		this->Reg->Output_Restart(time);
+		//		this->Reg->Output_Restart(time);
 	}
 };
 #endif

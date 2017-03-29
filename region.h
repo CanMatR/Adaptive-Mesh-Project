@@ -297,7 +297,14 @@ public:
 	}
 
 	// **************** OUTPUT FUNCTIONS **********/
-
+	void Output_Load(int time, FILE *fp,int myid)
+	{
+		int i;
+		for (i = 0; i < this->Dom.size(); i++)
+		{
+			Dom[i]->Output_Load(time,fp,myid);
+		}
+	}
 	void Output_VTK(int time, int lowres)
 	{
 		unsigned int i;
@@ -317,7 +324,7 @@ public:
 				sprintf(directory, "restart_%d\\region_%d", time, this->Regid);
 		#elif __linux
 				sprintf(directory, "./restart_%d/region_%d", time, this->Regid);
-		#else
+		#elif __unix
 				sprintf(directory, "./restart_%d/region_%d", time, this->Regid);
 		#endif
 		for (i = 0; i < this->Dom.size(); i++)

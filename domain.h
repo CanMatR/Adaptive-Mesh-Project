@@ -1075,6 +1075,15 @@ public:
 		*/
 	}
 	//Output Functions
+	void Output_Load(int time, FILE *fp, int myid)
+	{
+		int i, c=0;
+		for (i = 0; i<DP.maxRes; i++)
+		{
+			c += subdomainRes[i].size();
+		}
+		fprintf(fp, "%d %d : %d %d %d : %d\n", time, myid, this->DP.O.Vx, this->DP.O.Vy, this->DP.O.Vz, c);
+	}
 	void Output_Restart(int time, char *directory)
 	{
 		int i;
