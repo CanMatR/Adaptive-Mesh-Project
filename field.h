@@ -618,7 +618,8 @@ public:
 		int ind[8];
 		int Nx = this->grid_size.Vx + 2 * this->B;
 		int Ny = this->grid_size.Vy + 2 * this->B;
-
+		/*
+		//for model with single id field
 		if(V==3)//special case for id field, remove for general modelling
 		  {
 		    int xx,yy,zz,nn;
@@ -633,7 +634,7 @@ public:
 		      //                        return data[V][ind[0]];
 		    }
 		  }
-
+		  */
 		if (rx%dx == 0 && ry%dx == 0 && rz%dx ==0)
 		{
 			ind[0] = index(xi, yi, zi, Nx, Ny);
