@@ -384,15 +384,15 @@ public:
 		int xs, ys;
 		int xe, ye;
 		int dx_rat;
-		dx_rat = this->dx / fld->dx;
-		xs = (fld->origin.Vx - this->origin.Vx) / this->dx;
+
+		xs = ceil((fld->origin.Vx - this->origin.Vx) / this->dx);
 		xe = ceil(((float)(fld->origin.Vx+fld->grid_size.Vx*fld->dx-this->origin.Vx)) / (float) this->dx);
-		ys = (fld->origin.Vy - this->origin.Vy) / this->dx;
+		ys = ceil((fld->origin.Vy - this->origin.Vy) / this->dx);
 		ye = ceil(((float)(fld->origin.Vy + fld->grid_size.Vy*fld->dx - this->origin.Vy)) / (float)this->dx);
 		if (this->dim == 3)
 		{
 			int z,zs, ze;
-			zs = (fld->origin.Vz - this->origin.Vz) / this->dx;
+			zs = ceil((fld->origin.Vz - this->origin.Vz) / this->dx);
 			ze = ceil(((fld->origin.Vz + fld->grid_size.Vz*fld->dx - this->origin.Vz)) / (float)this->dx);
 			for (i = 0; i < fld->nf; i++)
 			{
