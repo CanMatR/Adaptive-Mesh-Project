@@ -318,6 +318,7 @@ public:
 				C[x][y][0]->fld = new field(O_tmp, this->fld);//creates the new field based off the parent's field
 			}
 		}
+		return 1;
 	}
 	bool Unsplit()
 	{

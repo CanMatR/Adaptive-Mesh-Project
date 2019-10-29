@@ -153,13 +153,13 @@ public:
 	void Adaption_Cycle(int t)
 	{
 		int i;
-/*		Reg->Unadapt_Domains();
+		Reg->Unadapt_Domains();
 		this->Build_Communication_Requests();
 		for (i = 1; i < MESH_PARAMS.comm_calls; i++)
 		{
 			this->Communicate(i);
 		}
-		*/
+		
 		Reg->Adapt_Domains();
 		this->Build_Adaption_Communication_Requests();
 		Adaption_Parallel();
