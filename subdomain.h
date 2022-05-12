@@ -168,6 +168,7 @@ public:
 			}
 			return NULL;
 		}
+		return NULL;
 	}
 	subdomain *Find_Subdomain(cart_vector Orig, int size)
 	{

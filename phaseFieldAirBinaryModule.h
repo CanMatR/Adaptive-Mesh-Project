@@ -230,8 +230,11 @@ public:
 		Con->Load_Restart(time);
 	}
 	void Create_Initialization()
-	{	
-		this->Load_Simulation_Parameters("Simul_Params.dat");
+	{
+	  char filename[BUFSIZ];
+	  sprintf(filename,"Simul_Params.dat");
+	  this->Load_Simulation_Parameters(filename);
+	  //		this->Load_Simulation_Parameters("Simul_Params.dat");
 		Con->Create_Initialization();
 		Con->Get_Field_List(fields);
 		Initialize_Fields();

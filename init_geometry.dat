@@ -13,17 +13,3 @@
 1				:	Number of adaption criteria
 1				:	Type(1=circle/sphere)
 6 256 256 256	:   Radius, Seed Center
-1				:	Type(1=circle/sphere)
-4 244 34 128	:   Radius, Seed Center
-1				:	Type(1=circle/sphere)
-4 314 84 128	:   Radius, Seed Center
-1				:	Type(1=circle/sphere)
-4 415 54 128	:   Radius, Seed Center
-1				:	Type(1=circle/sphere)
-4 586 114 128	:   Radius, Seed Center
-1				:	Type(1=circle/sphere)
-4 714 24 128	:   Radius, Seed Center
-1				:	Type(1=circle/sphere)
-4 812 144 128	:   Radius, Seed Center
-1				:	Type(1=circle/sphere)
-4 945 112 128	:   Radius, Seed Center

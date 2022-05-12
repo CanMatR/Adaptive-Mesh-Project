@@ -1109,6 +1109,7 @@ public:
 			}
 
 		}
+		return 0;
 	}
 	int vtk_Get_Num_Cells(int lowres)
 	{
@@ -1146,6 +1147,7 @@ public:
 //				return 3*3;
 			}
 		}
+		return 0;
 	}
 	void vtk_Output_Points(FILE *fp,int lowres)
 	{
@@ -1261,6 +1263,7 @@ public:
 
 			}
 		}
+
 	}
 	void vtk_Output_Point_Data(int V, FILE *fp,int lowres)
 	{
@@ -1460,6 +1463,7 @@ public:
 				return 2*(cx+1)*(cy+1);
 			}
 		}
+		return 0;
 	}
 	
 	// ************** TMP FUNCTIONS ********************
